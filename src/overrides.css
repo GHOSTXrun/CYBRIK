@@ -1,5 +1,20 @@
 /* Full-bleed the whole page + drop the inner frame around the 3D stage */
 
+/* speech bubble above the minifig (follows his head, shows the current SILICOO SAYS line) */
+.viewport .fig-bubble {
+  position: absolute; top: 0; left: 0; z-index: 7;
+  max-width: 240px; padding: 8px 12px;
+  background: rgba(20, 18, 15, 0.94); border: 1px solid #574d3f; border-radius: 11px;
+  color: #f1ece2; font-size: 11px; line-height: 1.45; font-weight: 600; text-align: center;
+  pointer-events: none; opacity: 0; transition: opacity .3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  will-change: transform, opacity;
+}
+.viewport .fig-bubble::after {
+  content: ''; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%);
+  border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 7px solid rgba(20, 18, 15, 0.94);
+}
+
 /* LIVE / OFFLINE badge in the left panel title (reflects real worker freshness) */
 .left-panel .panel-title span.live-on { color: #12100d; background: #57a35c; }
 .left-panel .panel-title span.live-off { color: #cfc9bd; background: #3a352d; }
