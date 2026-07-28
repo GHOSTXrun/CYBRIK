@@ -591,6 +591,32 @@ export default function App() {
     // ---- mailbox by the driveway ----
     cy(0.06, 0.8, OM.metal, -3.2, 0.5, 8.4); fb(0.45, 0.3, 0.24, OM.blue, -3.2, 0.95, 8.4); fb(0.03, 0.2, 0.03, OM.red, -2.95, 1.05, 8.4)
 
+    // ---- backyard pool (behind the kitchen) — built from the same bricks + tiles as the rooms ----
+    ;(function () {
+      const water = new THREE.MeshStandardMaterial({ color: 0x2f9fd0, roughness: 0.12, metalness: 0.1, envMapIntensity: 0.6 })
+      const cx = -4.5, cz = -7.0, y0 = 0.1
+      tile(11, 3, M.cream, cx, cz, y0)                                  // pool deck (pale tile)
+      brick(9, 1, 1, M.steel, cx, cz - 0.7, y0 + 0.2); brick(9, 1, 1, M.steel, cx, cz + 0.7, y0 + 0.2)  // coping rim (N/S)
+      brick(1, 1, 3, M.steel, cx - 2.15, cz, y0 + 0.2); brick(1, 1, 3, M.steel, cx + 2.15, cz, y0 + 0.2) // coping rim (E/W)
+      bx(3.6, 0.18, 0.9, water, cx, y0 + 0.28, cz)                     // water surface
+      cyl(0.04, 0.5, M.steel, cx + 1.6, y0 + 0.45, cz)                 // ladder rail
+      cyl(0.3, 0.1, M.orange, cx - 1.3, y0 + 0.34, cz + 0.1)           // ring float
+    })()
+
+    // ---- backyard shower / bathroom (behind the bedroom) — same brick + tile form ----
+    ;(function () {
+      const cx = 4.5, cz = -7.0, y0 = 0.1, ft = y0 + 0.2, wy = ft + 0.9
+      tile(5, 3, M.teal, cx, cz, y0)                                   // tiled floor
+      bx(2.5, 1.8, 0.2, M.wall, cx, wy, cz - 0.75)                     // back wall
+      bx(0.2, 1.8, 1.5, M.wall, cx - 1.15, wy, cz)                     // left wall
+      bx(0.2, 1.8, 1.5, M.wall, cx + 1.15, wy, cz)                     // right wall
+      bx(0.9, 1.05, 0.05, M.screen, cx, ft + 0.9, cz - 0.64)          // mirror on the back wall
+      brick(2, 2, 3, M.cream, cx - 0.7, cz + 0.2, ft); cyl(0.22, 0.12, M.cream, cx - 0.7, ft + 0.66, cz + 0.2) // toilet
+      brick(2, 1, 3, M.cream, cx + 0.7, cz - 0.3, ft); cyl(0.17, 0.08, M.steel, cx + 0.7, ft + 0.64, cz - 0.3) // sink + basin
+      cyl(0.03, 0.4, M.steel, cx, ft + 1.4, cz - 0.62); cyl(0.12, 0.05, M.steel, cx, ft + 1.2, cz - 0.55)      // showerhead
+      cyl(0.3, 0.02, M.black, cx, ft + 0.02, cz + 0.3)                 // floor drain
+    })()
+
     // walls span EXACTLY end-to-end (no +WT extension). Perpendicular walls butt one another's faces -> zero overlap.
     const IN = WT / 2 // 0.17 : half wall thickness (inner-face inset)
     const wall = (x1, z1, x2, z2, m = M.wall) => {
