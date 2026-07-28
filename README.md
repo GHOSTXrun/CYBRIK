@@ -11,8 +11,8 @@
     <a href="https://github.com/silicoodate/SILICOO"><img alt="GitHub" src="https://img.shields.io/badge/source-GitHub-181717?style=flat-square&logo=github&logoColor=white"></a>
   </p>
   <p>
-    <a href="https://github.com/silicoodate/SILICOO/actions/workflows/deploy.yml"><img alt="Deploy" src="https://img.shields.io/github/actions/workflow/status/silicoodate/SILICOO/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=deploy"></a>
-    <a href="https://github.com/silicoodate/SILICOO/releases"><img alt="Release" src="https://img.shields.io/github/v/release/silicoodate/SILICOO?style=flat-square&label=release&color=ff531f"></a>
+    <a href="https://github.com/silicoodate/SILICOO/actions/workflows/deploy.yml"><img alt="Deploy" src="https://img.shields.io/github/actions/workflow/status/silicoodate/SILICOO/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=deploy&cacheSeconds=300"></a>
+    <a href="https://github.com/silicoodate/SILICOO/releases"><img alt="Release" src="https://img.shields.io/github/v/release/silicoodate/SILICOO?style=flat-square&label=release&color=ff531f&cacheSeconds=300"></a>
     <a href="https://github.com/silicoodate/SILICOO/pkgs/container/silicoo"><img alt="Container" src="https://img.shields.io/badge/ghcr.io-image-2496ed?style=flat-square&logo=docker&logoColor=white"></a>
     <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-ff531f?style=flat-square"></a>
     <img alt="React" src="https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=black">
