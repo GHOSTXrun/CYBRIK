@@ -612,7 +612,10 @@ body {
 .page-token .tok-buy-n { font-size: 10px; font-weight: 800; color: #ff531f; font-variant-numeric: tabular-nums; padding-top: 1px; flex: none; }
 .page-token .tok-buy li b { display: block; font-size: 12px; font-weight: 800; color: #ece6da; margin-bottom: 3px; }
 .page-token .tok-buy li span { font-size: 10.5px; line-height: 1.5; color: #9c958a; }
-.page-token .tok-buy-cta { margin-top: 16px; font-size: 10px; font-weight: 800; letter-spacing: .14em; color: #6f6a61; background: #1c1a16; border: 1px solid #34302a; padding: 13px 28px; border-radius: 2px; cursor: not-allowed; }
+.page-token .tok-buy-cta { display: inline-block; margin-top: 16px; font-size: 10px; font-weight: 800; letter-spacing: .14em; color: #12100d; background: #ff531f; border: 1px solid #ff531f; padding: 13px 28px; border-radius: 2px; cursor: pointer; text-decoration: none; transition: filter .12s; }
+.page-token .tok-buy-cta:hover { filter: brightness(1.08); }
+.page-token .tok-ca-copy { flex: none; font-size: 8px; font-weight: 800; letter-spacing: .08em; color: #ff8a4c; background: #211410; border: 1px solid #5a3320; padding: 4px 9px; border-radius: 2px; cursor: pointer; transition: all .12s; }
+.page-token .tok-ca-copy:hover { border-color: #ff531f; color: #ff531f; }
 
 /* placeholder for pages not built yet */
 .console-shell .page-soon { min-height: 0; display: flex; align-items: center; justify-content: center; }

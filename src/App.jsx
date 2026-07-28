@@ -87,6 +87,13 @@ const TAG = { TRADE: '#ff531f', MOVE: '#5b9bd5', WORK: '#a06cd5', FOOD: '#e0a52a
 // memory type colours (SILICOO writes these himself)
 const MEM_TAG = { LESSON: '#a06cd5', MARKET: '#e0a52a', STUDY: '#5b9bd5', MOMENT: '#57a35c', MILESTONE: '#ff8a4c', PERSON: '#c86bb0' }
 
+// ----- $SILICOO token (live on pump.fun / Solana) -----
+const CA = 'D3qAnMUL2G7yuGhhv5wrLHfBtPLSWCuKDQvJKiErpump'
+const DEX_URL = 'https://dexscreener.com/solana/' + CA
+const PUMP_URL = 'https://pump.fun/coin/' + CA
+const fmtUsd = (n) => { n = Number(n); if (!isFinite(n) || n <= 0) return '—'; if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M'; if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K'; return '$' + n.toFixed(0) }
+const fmtPrice = (p) => { p = Number(p); if (!isFinite(p) || p <= 0) return '—'; return '$' + (p >= 1 ? p.toFixed(4) : p.toPrecision(3)) }
+
 // chat emoji palette
 const EMOJIS = ['😀', '😂', '🥰', '😎', '😭', '😍', '🤔', '😴', '👍', '🙌', '👋', '🙏', '🔥', '🎉', '🥳', '🚀', '💜', '❤️', '✨', '💯', '🧱', '☕', '👀', '😅']
 // 10 preset username colours (orange first = default)
@@ -219,6 +226,8 @@ export default function App() {
   const [bornAt, setBornAt] = useState(0) // ms of SILICOO's first ever action
   const [memories, setMemories] = useState(0)
   const [memList, setMemList] = useState([]) // SILICOO's real memories from Supabase
+  const [tok, setTok] = useState(null) // live $SILICOO market data from DexScreener
+  const [copied, setCopied] = useState(false)
   const [actions, setActions] = useState(0)
   const [speech, setSpeech] = useState('') // filled from the shared AI state; no fabricated placeholder
   const [now, setNow] = useState(() => Date.now())
@@ -345,6 +354,13 @@ export default function App() {
 
   // real-time clock — drives ET time, days-lived and world uptime
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t) }, [])
+  // live $SILICOO market data from DexScreener, refreshed every 30s
+  useEffect(() => {
+    let active = true
+    const load = () => fetch('https://api.dexscreener.com/latest/dex/tokens/' + CA).then((r) => r.json()).then((d) => { if (active) setTok(d?.pairs?.[0] || null) }).catch(() => {})
+    load(); const t = setInterval(load, 30000)
+    return () => { active = false; clearInterval(t) }
+  }, [])
 
   useEffect(() => {
     const host = stageRef.current
@@ -1037,7 +1053,7 @@ export default function App() {
           <a href="https://github.com/silicoodate/SILICOO" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
             <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.5 11.5 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /></svg>
           </a>
-          <a href="https://dexscreener.com/" target="_blank" rel="noopener noreferrer" aria-label="DexScreener" className="dex">
+          <a href={DEX_URL} target="_blank" rel="noopener noreferrer" aria-label="DexScreener" className="dex">
             <svg viewBox="0 0 24 24" fill="none"><path fillRule="evenodd" clipRule="evenodd" d="M11.3194 1.03032C10.7842 1.07698 10.1201 1.22792 9.56568 1.43101C8.77528 1.71369 7.82296 2.26533 7.14782 2.83068C6.57972 3.30273 5.94575 3.99159 5.54232 4.57067C5.45449 4.69691 5.37765 4.80669 5.37216 4.81218C5.35569 4.83413 4.82053 4.46089 4.52687 4.21938C4.3622 4.0849 4.07404 3.82692 3.88741 3.65127C3.70353 3.47288 3.55259 3.33292 3.55259 3.34115C3.55259 3.38232 3.77215 3.89004 3.91211 4.16449C4.26889 4.88079 4.71349 5.45712 5.56702 6.31339C6.61265 7.36177 7.76532 8.31136 9.16499 9.28015C9.71663 9.66163 10.5482 10.194 10.5921 10.194C10.6086 10.194 10.647 10.1666 10.6772 10.1364C10.7595 10.0458 11.0395 9.85374 11.2343 9.75768C11.4786 9.63418 11.8573 9.55459 12.1016 9.5738C12.4803 9.60399 12.8673 9.76317 13.2323 10.0431C13.3421 10.1254 13.4381 10.194 13.4436 10.194C13.4628 10.194 14.3438 9.63418 14.6676 9.41737C16.7918 7.98202 18.6526 6.32437 19.5555 5.05918C19.9123 4.55969 20.2169 3.99708 20.3871 3.53052L20.4584 3.32743L20.1099 3.65676C19.6653 4.07392 19.2646 4.40325 18.9243 4.63379C18.7761 4.73259 18.6471 4.81492 18.6388 4.81492C18.6306 4.81492 18.5538 4.71338 18.4659 4.58713C18.2162 4.23035 17.8924 3.84064 17.5493 3.48661C15.8175 1.69448 13.6028 0.821744 11.3194 1.03032ZM4.37867 6.74976C4.09874 7.49351 3.98072 8.27842 3.93681 9.65888C3.90388 10.6688 3.85722 11.2726 3.75842 11.8984C3.54161 13.2816 3.23698 14.2586 2.58654 15.639C2.45206 15.9245 2.34777 16.1632 2.35601 16.1687C2.38894 16.2044 3.02291 15.7818 3.41537 15.4634C3.55808 15.3454 3.83527 15.0956 4.03287 14.9063C4.22772 14.7169 4.39239 14.5632 4.39514 14.566C4.40337 14.5769 4.2387 15.3811 4.18381 15.5869C3.92858 16.5365 3.5224 17.4586 2.97076 18.3314C2.79238 18.614 2.39169 19.1849 2.07058 19.613C1.99648 19.7173 1.94434 19.7996 1.95532 19.7996C1.96904 19.7996 2.13645 19.72 2.33405 19.624C3.33303 19.1272 4.18107 18.485 4.98519 17.6096L5.22122 17.3543L5.29532 17.6782C5.47919 18.4713 5.81127 19.3688 6.22569 20.1948C6.46994 20.6833 6.93101 21.5067 6.95022 21.4875C6.95571 21.4847 7.00786 21.3338 7.07098 21.1554C7.20271 20.7684 7.46618 20.1811 7.70495 19.7447C7.8998 19.3907 8.25109 18.8144 8.27305 18.8116C8.28128 18.8116 8.34715 18.9269 8.42125 19.0669C8.91799 19.9945 9.60136 20.9852 10.6635 22.3108C10.9434 22.6566 11.3551 23.1753 11.5801 23.4635C11.8024 23.7489 11.9918 23.9904 12 23.9986C12.0055 24.0069 12.0357 23.9767 12.0686 23.9328C12.0988 23.8889 12.4227 23.4827 12.7849 23.0326C14.3191 21.1252 14.9174 20.2799 15.5651 19.1053C15.6886 18.883 15.7352 18.8171 15.7572 18.8446C15.8395 18.9434 16.1826 19.5307 16.3719 19.8957C16.6519 20.4363 16.8357 20.8453 16.9483 21.1938C17.0004 21.3475 17.0471 21.4737 17.0553 21.4737C17.0992 21.4737 17.5575 20.6504 17.8484 20.0466C18.2354 19.2453 18.5044 18.5097 18.6882 17.7605C18.7404 17.5492 18.787 17.3708 18.7925 17.368C18.798 17.3626 18.9188 17.4888 19.0615 17.648C19.5418 18.1914 20.2032 18.7485 20.8673 19.1684C21.1802 19.366 21.9871 19.7996 22.0447 19.7996C22.0639 19.7996 21.9157 19.5856 21.7209 19.3221C21.1308 18.529 20.774 17.9526 20.4447 17.2638C20.044 16.424 19.8217 15.7131 19.6241 14.6456C19.6104 14.5605 19.6378 14.5824 20.0138 14.9392C20.4502 15.3536 20.7823 15.6336 21.0979 15.8421C21.3202 15.9931 21.6303 16.177 21.6605 16.177C21.6715 16.177 21.5782 15.9711 21.4547 15.7214C20.7631 14.3162 20.3377 12.8781 20.173 11.3797C20.151 11.1793 20.1181 10.699 20.1016 10.3093C20.022 8.36624 19.9891 8.00672 19.8382 7.41392C19.7613 7.11203 19.6433 6.71957 19.6021 6.64547C19.5802 6.60431 19.5006 6.67566 19.0642 7.11477C18.7816 7.4002 18.444 7.73228 18.3095 7.85029L18.0707 8.0671L18.1119 8.20432C18.2409 8.62697 18.2848 9.33778 18.2107 9.75494C17.9939 10.9488 17.0882 11.8435 15.856 12.0767C15.5898 12.1261 14.997 12.1371 14.7527 12.0932L14.6072 12.0685L14.6237 12.1536C14.6319 12.2002 14.6704 12.3677 14.7088 12.5268C14.7445 12.686 14.7856 12.8973 14.7939 12.9989L14.8131 13.1855L15.4333 13.578C16.4488 14.2202 16.7781 14.4342 16.7781 14.448C16.7809 14.4562 16.6848 14.5166 16.5668 14.5824C15.9959 14.9063 15.3428 15.3701 14.9997 15.6967C14.2258 16.4322 13.5561 17.6919 12.6642 20.0878C12.4638 20.6312 12.0686 21.7482 12.0467 21.8388C12.0357 21.8799 12.0192 21.9129 12.0082 21.9129C12 21.9101 11.9506 21.7839 11.8985 21.6302C11.742 21.1472 11.2398 19.7804 11.0175 19.2233C10.2244 17.2391 9.6096 16.2126 8.79724 15.5155C8.51456 15.274 7.9245 14.8651 7.53205 14.6401C7.41952 14.5742 7.30151 14.5056 7.27407 14.4864C7.22741 14.4534 7.26858 14.4205 7.70769 14.1323C7.9739 13.9567 8.41301 13.6768 8.67923 13.5093C8.94544 13.3419 9.17048 13.202 9.17597 13.1965C9.18146 13.191 9.20342 13.0757 9.22263 12.9385C9.2583 12.7025 9.36808 12.2167 9.41474 12.1042C9.43121 12.0603 9.42572 12.0548 9.36534 12.0685C9.01405 12.1563 8.37185 12.1426 7.95469 12.0356C7.17801 11.8352 6.49739 11.3385 6.13512 10.7073C5.73992 10.0157 5.65484 9.12371 5.90459 8.23726L5.9485 8.07533L5.5533 7.70483C5.33648 7.499 4.99617 7.16692 4.79857 6.96108L4.4363 6.59058L4.37867 6.74976ZM6.83495 8.88495C6.76634 9.15665 6.79379 9.57655 6.90082 9.89216C7.18076 10.7182 8.03702 11.226 8.98935 11.1272C9.39004 11.086 9.82366 10.9625 9.76603 10.9076C9.75231 10.8966 9.42023 10.6716 9.02777 10.4081C8.33343 9.9443 7.70495 9.49147 7.17527 9.07431C7.03256 8.96179 6.90082 8.8575 6.88435 8.84378C6.8624 8.82731 6.84593 8.84103 6.83495 8.88495ZM17.0004 8.94807C16.4817 9.37071 15.7352 9.90588 14.8652 10.485C14.1105 10.9872 14.1434 10.9296 14.5578 11.0448C14.8488 11.1272 15.4278 11.1491 15.7242 11.0887C16.0673 11.0201 16.4186 10.8308 16.6738 10.5783C16.8467 10.4081 16.9044 10.3258 17.0086 10.1117C17.0773 9.969 17.1486 9.78238 17.1678 9.70005C17.209 9.53538 17.2117 9.01942 17.1733 8.89867L17.1514 8.82731L17.0004 8.94807ZM11.7777 10.5893C11.2178 10.7896 10.6443 11.5718 10.3616 12.5186C10.293 12.7574 10.2079 13.2212 10.153 13.6795L10.1365 13.8057L9.65076 14.0994C9.38455 14.2613 9.14853 14.404 9.12932 14.4178C9.10462 14.4315 9.16499 14.4946 9.33515 14.6318C9.66174 14.8926 10.1942 15.4497 10.4137 15.7598C10.8885 16.4294 11.3688 17.3543 11.8134 18.4549C11.9067 18.6881 11.989 18.8912 11.9973 18.9022C12.0055 18.9132 12.0933 18.7156 12.1976 18.4631C12.7355 17.132 13.2378 16.1962 13.7812 15.5183C14.0035 15.2411 14.3712 14.8761 14.6704 14.6373L14.9174 14.4397L14.8268 14.3793C14.7774 14.3464 14.5414 14.2064 14.3054 14.0665L13.8745 13.8112L13.8608 13.6987C13.7153 12.5515 13.5506 12.0301 13.1472 11.4208C12.7081 10.7622 12.1839 10.4438 11.7777 10.5893Z" fill="currentColor" /></svg>
           </a>
         </div>
@@ -1518,17 +1534,17 @@ export default function App() {
               </div>
 
               <div className="tok-stats">
-                <div className="tok-stat"><span>PRICE</span><b>—</b></div>
-                <div className="tok-stat"><span>MARKET CAP</span><b>—</b></div>
-                <div className="tok-stat"><span>HOLDERS</span><b>—</b></div>
-                <div className="tok-stat"><span>TOTAL BURNED</span><b>—</b></div>
+                <div className="tok-stat"><span>PRICE</span><b>{fmtPrice(tok?.priceUsd)}</b></div>
+                <div className="tok-stat"><span>MARKET CAP</span><b>{fmtUsd(tok?.marketCap || tok?.fdv)}</b></div>
+                <div className="tok-stat"><span>LIQUIDITY</span><b>{fmtUsd(tok?.liquidity?.usd)}</b></div>
+                <div className="tok-stat"><span>24H VOL</span><b>{fmtUsd(tok?.volume?.h24)}</b></div>
               </div>
-              <div className="tok-status"><span className="tok-dot" />NOT LIVE YET · these numbers connect the moment the token launches</div>
+              <div className="tok-status"><span className="tok-dot" style={tok ? { background: '#57a35c', boxShadow: '0 0 6px #57a35c' } : undefined} />{tok ? 'LIVE · prices from DexScreener, refreshed every 30s' : 'connecting to the market…'}</div>
 
               <div className="tok-contract">
                 <span className="tok-ca-label">CONTRACT</span>
-                <code>To be announced at launch</code>
-                <span className="tok-ca-tag">TBA</span>
+                <code style={{ wordBreak: 'break-all' }}>{CA}</code>
+                <button className="tok-ca-copy" onClick={() => { navigator.clipboard?.writeText(CA); setCopied(true); setTimeout(() => setCopied(false), 1200) }}>{copied ? 'COPIED' : 'COPY'}</button>
               </div>
 
               <div className="tok-block">
@@ -1545,19 +1561,19 @@ export default function App() {
 
               <div className="tok-block">
                 <div className="ov-label">BURN TRACKER</div>
-                <p className="tok-blurb">Once the token is live, every buyback and burn tied to his spending will show up here in real time, receipt by receipt.</p>
-                <div className="tok-burn-empty"><span className="tok-dot" />Awaiting launch — no burns to show yet</div>
+                <p className="tok-blurb">Every buyback and burn tied to Silicoo's spending will show up here, receipt by receipt.</p>
+                <div className="tok-burn-empty"><span className="tok-dot" />No burns yet — they begin once Silicoo is funded and starts spending on-chain.</div>
               </div>
 
               <div className="tok-block">
                 <div className="ov-label">HOW TO GET SOME</div>
-                <p className="tok-blurb">The token is not tradeable yet. When it launches, this is all it takes.</p>
+                <p className="tok-blurb">$SILICOO is live. Grab some in under a minute.</p>
                 <ol className="tok-buy">
                   <li><span className="tok-buy-n">01</span><div><b>Get a Solana wallet</b><span>Phantom, or any Solana wallet you like.</span></div></li>
                   <li><span className="tok-buy-n">02</span><div><b>Fund it with SOL</b><span>You will swap SOL for $SILICOO.</span></div></li>
-                  <li><span className="tok-buy-n">03</span><div><b>Swap for $SILICOO</b><span>Using the official contract once it is live. Always check the address on this page first.</span></div></li>
+                  <li><span className="tok-buy-n">03</span><div><b>Buy $SILICOO</b><span>On pump.fun or any Solana DEX. Always confirm the contract address above first.</span></div></li>
                 </ol>
-                <button className="tok-buy-cta" disabled>NOT TRADEABLE YET</button>
+                <a className="tok-buy-cta" href={PUMP_URL} target="_blank" rel="noopener noreferrer">BUY $SILICOO ON PUMP.FUN →</a>
               </div>
             </div>
           </div>
