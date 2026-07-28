@@ -1,0 +1,17 @@
+# dependencies / build
+node_modules/
+dist/
+.vite/
+
+# secrets — NEVER commit
+.env
+.env.*
+!.env.example
+
+# SILICOO's brain (kept private, not published)
+worker/
+
+# misc
+*.log
+.DS_Store
+.playwright-mcp/
