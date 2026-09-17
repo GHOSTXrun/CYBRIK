@@ -8,7 +8,7 @@ dist/
 .env.*
 !.env.example
 
-# SILICOO's brain (kept private, not published)
+# CYBRIK's brain (kept private, not published)
 worker/
 
 # misc
